@@ -1,25 +1,22 @@
-import os
-import google.generativeai as genai
 from telegram import Update
-from telegram.ext import Application, MessageHandler, CommandHandler, ContextTypes, filters
+from telegram.ext import Application, CommandHandler, ContextTypes
+import os
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-
-genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-2.5-flash")
+TOKEN = os.getenv("BOT_TOKEN")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Salom! Men Gemini AI botman. Menga xabar yozing.")
+    await update.message.reply_text("👋 Salom! Botga xush kelibsiz.")
 
-async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_text = update.message.text
-    response = model.generate_content(user_text)
-    await update.message.reply_text(response.text)
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("📖 Buyruqlar:\n/start\n/help\n/about")
 
-app = Application.builder().token(BOT_TOKEN).build()
+async def about(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("ℹ️ Bu bot Yodgor tomonidan yaratilgan.")
+
+app = Application.builder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, chat))
+app.add_handler(CommandHandler("help", help_command))
+app.add_handler(CommandHandler("about", about))
 
 app.run_polling()
